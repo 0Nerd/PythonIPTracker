@@ -1,0 +1,66 @@
+import requests
+import colorama
+
+def get_geolocation():
+    # Set the base URL for the ipapi API
+    API_URL = "https://ipapi.co/{ip}/json/"
+
+    # Prompt the user for an IP address
+    ip = input("What IP would you like to use? ")
+    #Not always accurate if no IP address is provided
+    if ip is None:
+      ip=requests.get("https://ipapi.co/ip")
+    # Set the maximum number of retries
+    max_retries = 20
+
+    while max_retries > 0:
+        # Make a request to the API using the user-specified IP address
+        response = requests.get(API_URL.format(ip=ip))
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Get the geolocation data from the response
+            data = response.json()
+
+            # Format the data as desired
+            ip = data["ip"]
+            isp = data["org"]
+            longitude = data["longitude"]
+            latitude = data["latitude"]
+            country = data["country_name"]
+            state = data["region"]
+            city = data["city"]
+            time = data["timezone"]
+
+            # Output the data with orange prefixes
+            print(colorama.Fore.LIGHTCYAN_EX + "IP:", end=' ')
+            print(ip)
+            print(colorama.Fore.LIGHTCYAN_EX + "ISP:", end=' ')
+            print(isp)
+            print(colorama.Fore.LIGHTCYAN_EX + "Longitude:", end=' ')
+            print(longitude)
+            print(colorama.Fore.LIGHTCYAN_EX + "Latitude:", end=' ')
+            print(latitude)
+            print(colorama.Fore.LIGHTCYAN_EX + "Country:", end=' ')
+            print(country)
+            print(colorama.Fore.LIGHTCYAN_EX + "State:", end=' ')
+            print(state)
+            print(colorama.Fore.LIGHTCYAN_EX + "City:", end=' ')
+            print(city)
+            print(colorama.Fore.LIGHTCYAN_EX + "Time:",  end=' ')
+            print(time)
+
+            # Generate a Google Maps link using the latitude and longitude values
+            maps_link = f"https://www.google.com/maps/search/?api=1&query={latitude},{longitude}"
+            print(colorama.Fore.LIGHTCYAN_EX + "Google Maps link:", end=' ')
+            print(maps_link)
+            break
+        else:
+            # If the request was not successful
+            print("We failed, trying again.")
+            max_retries -= 1
+
+# Initialize colorama
+colorama.init()
+
+get_geolocation()
